@@ -9,29 +9,42 @@ import android.widget.ImageView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.memorygame.models.BoardSize
+import com.example.memorygame.models.MemoryCard
 import kotlin.math.min
 
-class MemoryBoardAdapter(private val context: Context, private val boardSize: BoardSize, private val cardImages: List<Int>) :
-        RecyclerView.Adapter<MemoryBoardAdapter.ViewHolder>() {
+class MemoryBoardAdapter(private val context: Context, private val boardSize: BoardSize, private val cards: List<MemoryCard>, private val cardClickListener: CardClickListener)
+    : RecyclerView.Adapter<MemoryBoardAdapter.ViewHolder>() {
 
-    companion object{
+    companion object {
         private const val MARGIN_SIZE = 10
     }
 
-    inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
-        private val imageButton:ImageView = itemView.findViewById(R.id.imageButton)
-        
-        fun bind(position:Int){
-            imageButton.setImageResource(cardImages.get(position))
-            imageButton.setOnClickListener{
-                Log.i("this", "clicked on $position")
+    interface CardClickListener {
+        fun onCardClicked(position: Int)
+    }
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val imageButton: ImageView = itemView.findViewById(R.id.imageButton)
+
+        fun bind(position: Int) {
+            var res: Int = 0
+            if (cards[position].isFaceUp) {
+                res = cards[position].identifier
+            } else {
+                res = R.drawable.ic_launcher_background
+            }
+
+            imageButton.setImageResource(res)
+
+            imageButton.setOnClickListener {
+                cardClickListener.onCardClicked(position)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val cardWidth = parent.width/boardSize.getWidth() - (2* MARGIN_SIZE)
-        val cardHeight = parent.height/boardSize.getHeight() - (2* MARGIN_SIZE)
+        val cardWidth = parent.width / boardSize.getWidth() - (2 * MARGIN_SIZE)
+        val cardHeight = parent.height / boardSize.getHeight() - (2 * MARGIN_SIZE)
         val cardSideLength = min(cardHeight, cardWidth)
         val view = LayoutInflater.from(context).inflate(R.layout.memory_card, parent, false)
         val layoutParams = view.findViewById<CardView>(R.id.cardview).layoutParams as ViewGroup.MarginLayoutParams

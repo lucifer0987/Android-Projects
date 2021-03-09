@@ -2,10 +2,13 @@ package com.example.memorygame
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.memorygame.models.BoardSize
+import com.example.memorygame.models.MemoryCard
+import com.example.memorygame.models.MemoryGame
 import com.example.memorygame.utils.DEFAULT_ICONS
 
 class MainActivity : AppCompatActivity() {
@@ -20,12 +23,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         Init();
+        val memoryGame = MemoryGame(boardSize)
         rvBoard.setHasFixedSize(true)
         rvBoard.layoutManager = GridLayoutManager(this, boardSize.getWidth())
-
-        val chosenImages = DEFAULT_ICONS.shuffled().take(boardSize.getNumPairs())
-        val randomizedImages = (chosenImages+chosenImages).shuffled()
-        rvBoard.adapter = MemoryBoardAdapter(this, boardSize, randomizedImages)
+        rvBoard.adapter = MemoryBoardAdapter(this, boardSize, memoryGame.cards, object:MemoryBoardAdapter.CardClickListener{
+            override fun onCardClicked(position: Int) {
+                Log.i("this", "Card Clicked")
+            }
+        })
 
     }
 
