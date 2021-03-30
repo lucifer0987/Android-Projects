@@ -2,43 +2,35 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_above="@id/llGameInfo"
-        android:id="@+id/rvBoard"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:overScrollMode="never"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
     <LinearLayout
+        android:id="@+id/llGameInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/llGameInfo"
-        android:background="?attr/colorSecondaryVariant"
         android:layout_alignParentBottom="true"
+        android:background="?attr/colorSecondaryVariant"
         android:orientation="horizontal">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_margin="10dp"
+            android:layout_weight="1"
             app:cardCornerRadius="8dp">
 
             <TextView
-                android:gravity="center"
                 android:id="@+id/tvNumMoves"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:gravity="center"
+                android:padding="8dp"
                 android:text="Moves: 0"
-                android:padding="8dp"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         </androidx.cardview.widget.CardView>
 
@@ -50,16 +42,25 @@
             app:cardCornerRadius="8dp">
 
             <TextView
-                android:gravity="center"
                 android:id="@+id/tvNumPairs"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:gravity="center"
+                android:padding="8dp"
                 android:text="Pairs: 0/4"
-                android:padding="8dp"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         </androidx.cardview.widget.CardView>
 
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvBoard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/llGameInfo"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:overScrollMode="never" />
 
 </RelativeLayout>
