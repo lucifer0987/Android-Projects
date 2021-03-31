@@ -5,8 +5,14 @@ import android.icu.text.Transliterator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.RadioGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +37,87 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         Init();
+        setupBoard()
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.refresh -> {
+                if (memoryGame.getNumMoves() > 0 && !memoryGame.haveWonGame()) {
+                    showAlertDialog("Quit your current Game?", null, View.OnClickListener {
+                        setupBoard()
+                    })
+                } else {
+                    setupBoard()
+                }
+            }
+            R.id.new_size -> {
+                showNewSizeDialog()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showNewSizeDialog() {
+        val boardSizeView = LayoutInflater.from(this).inflate(R.layout.dialog_board_size, null)
+        val radioGroupsize = boardSizeView.findViewById<RadioGroup>(R.id.radioGroup)
+
+        when (boardSize) {
+            BoardSize.EASY -> radioGroupsize.check(R.id.rbEasy)
+            BoardSize.MEDIUM -> radioGroupsize.check(R.id.rbMedium)
+            BoardSize.HARD -> radioGroupsize.check(R.id.rbHard)
+        }
+
+        showAlertDialog("Choose new Size", boardSizeView, View.OnClickListener {
+            boardSize = when (radioGroupsize.checkedRadioButtonId) {
+                R.id.rbEasy -> BoardSize.EASY
+                R.id.rbMedium -> BoardSize.MEDIUM
+                else -> BoardSize.HARD
+            }
+            setupBoard()
+        })
+    }
+
+    private fun showAlertDialog(title: String, view: View?, positiveClickListener: View.OnClickListener) {
+        AlertDialog.Builder(this)
+                .setTitle(title)
+                .setView(view)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("OK") { _, _ ->
+                    positiveClickListener.onClick(null)
+                }.show()
+    }
+
+    private fun Init() {
+        clRoot = findViewById(R.id.clRoot)
+        rvBoard = findViewById(R.id.rvBoard)
+        tvNumMoves = findViewById(R.id.tvNumMoves)
+        tvNumPairs = findViewById(R.id.tvNumPairs)
+        tvNumPairs.setTextColor(ContextCompat.getColor(this, R.color.color_progress_none))
+    }
+
+    private fun setupBoard() {
+        when (boardSize) {
+            BoardSize.EASY -> {
+                tvNumMoves.text = "Easy: 4 x 2"
+                tvNumPairs.text = "Pairs: 0 / 4"
+            }
+            BoardSize.MEDIUM -> {
+                tvNumMoves.text = "Easy: 6 x 3"
+                tvNumPairs.text = "Pairs: 0 / 9"
+            }
+            BoardSize.HARD -> {
+                tvNumMoves.text = "Easy: 6 x 4"
+                tvNumPairs.text = "Pairs: 0 / 12"
+            }
+        }
         memoryGame = MemoryGame(boardSize)
         rvBoard.setHasFixedSize(true)
         rvBoard.layoutManager = GridLayoutManager(this, boardSize.getWidth())
@@ -40,7 +127,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
         rvBoard.adapter = adapter
-
     }
 
     private fun updateGameWithFlip(position: Int) {
@@ -70,13 +156,5 @@ class MainActivity : AppCompatActivity() {
         }
         tvNumMoves.text = "Moves: ${memoryGame.getNumMoves()}"
         adapter.notifyDataSetChanged()
-    }
-
-    private fun Init() {
-        clRoot = findViewById(R.id.clRoot)
-        rvBoard = findViewById(R.id.rvBoard)
-        tvNumMoves = findViewById(R.id.tvNumMoves)
-        tvNumPairs = findViewById(R.id.tvNumPairs)
-        tvNumPairs.setTextColor(ContextCompat.getColor(this, R.color.color_progress_none))
     }
 }

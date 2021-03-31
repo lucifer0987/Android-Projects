@@ -41,7 +41,6 @@ class MemoryGame(private val boardSize: BoardSize) {
         }
     }
 
-
     private fun restoreCards() {
         for (card in cards) {
             if (!card.isMatched) {
