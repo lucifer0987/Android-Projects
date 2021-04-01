@@ -19,6 +19,7 @@
             android:id="@+id/rbEasy"
             android:text="Easy (4 x 2)"
             android:textColor="#000000"
+            android:checked="true"
             android:textSize="18sp"/>
 
         <RadioButton

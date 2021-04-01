@@ -1,9 +1,11 @@
 package com.example.memorygame
 
 import android.animation.ArgbEvaluator
+import android.content.Intent
 import android.icu.text.Transliterator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.SyncStateContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -20,9 +22,14 @@ import com.example.memorygame.models.BoardSize
 import com.example.memorygame.models.MemoryCard
 import com.example.memorygame.models.MemoryGame
 import com.example.memorygame.utils.DEFAULT_ICONS
+import com.example.memorygame.utils.EXTRA_BOARD_SIZE
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
+
+    companion object{
+        private const val CREATE_REQUEST_CODE = 123
+    }
 
     private lateinit var rvBoard: RecyclerView
     private lateinit var tvNumMoves: TextView
@@ -37,6 +44,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         Init();
+
+        val intent = Intent(this, CreateActivity::class.java)
+        intent.putExtra(EXTRA_BOARD_SIZE, boardSize)
+        startActivity(intent)
+
         setupBoard()
 
     }
@@ -61,8 +73,29 @@ class MainActivity : AppCompatActivity() {
                 showNewSizeDialog()
                 return true
             }
+            R.id.custom -> {
+                showCreationDialog()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showCreationDialog() {
+        val boardSizeView = LayoutInflater.from(this).inflate(R.layout.dialog_board_size, null)
+        val radioGroupsize = boardSizeView.findViewById<RadioGroup>(R.id.radioGroup)
+
+        showAlertDialog("Create your new memory board", boardSizeView, View.OnClickListener {
+            val desiredBoardSize = when (radioGroupsize.checkedRadioButtonId) {
+                R.id.rbEasy -> BoardSize.EASY
+                R.id.rbMedium -> BoardSize.MEDIUM
+                else -> BoardSize.HARD
+            }
+            //navigate to new activity
+            val intent = Intent(this, CreateActivity::class.java)
+            intent.putExtra(EXTRA_BOARD_SIZE, desiredBoardSize)
+            startActivityForResult(intent, CREATE_REQUEST_CODE)
+        })
     }
 
     private fun showNewSizeDialog() {
